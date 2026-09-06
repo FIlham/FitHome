@@ -11,6 +11,7 @@ import {
     pgEnum,
     integer,
     json,
+    varchar,
 } from "drizzle-orm/pg-core";
 
 export const user = pgTable("user", {
@@ -19,6 +20,7 @@ export const user = pgTable("user", {
     email: text("email").notNull().unique(),
     emailVerified: boolean("email_verified").default(false).notNull(),
     image: text("image"),
+    isAdmin: boolean("is_admin").default(false).notNull(),
     createdAt: timestamp("created_at").notNull(),
     updatedAt: timestamp("updated_at")
         .$onUpdate(() => new Date())
@@ -120,9 +122,39 @@ export const workoutSession = pgTable("workout_session", {
     startTime: timestamp("start_time").defaultNow()
 }, (table) => [index("workout_session_userId_idx").on(table.userId), index("workout_session_exerciseId_idx").on(table.exerciseId), index("workout_session_variantId_idx").on(table.variantId)])
 
-export const relations = defineRelations({ user, session, account, verification, exercise, exerciseVariations, workoutSession }, (r) => ({
+export const userStreak = pgTable("user_streak", {
+    userId: text("user_id").primaryKey().references(() => user.id, { onDelete: "cascade" }),
+    currentStreak: integer("current_streak").notNull().default(0),
+    longestStreak: integer("longest_streak").notNull().default(0),
+    totalPoints: integer("total_points").notNull().default(0),
+    lastWorkoutDate: timestamp("last_workout_date"),
+    updatedAt: timestamp("updated_at").$onUpdate(() => new Date()).notNull().defaultNow(),
+})
+
+export const streakLog = pgTable("streak_log", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+    workoutDate: timestamp("workout_date").notNull(),
+    streakCount: integer("streak_count").notNull(),
+    pointsEarned: integer("points_earned").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+    uniqueIndex("streak_log_user_date_uidx").on(table.userId, table.workoutDate),
+    index("streak_log_userId_idx").on(table.userId),
+])
+
+export const news = pgTable("news", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    title: text("title").notNull(),
+    content: text("content").notNull(),
+    created_at: timestamp("created_at").defaultNow().notNull()
+})
+
+export const relations = defineRelations({ user, session, account, verification, exercise, exerciseVariations, workoutSession, userStreak, streakLog, news }, (r) => ({
     user: {
-        session: r.many.session()
+        session: r.many.session(),
+        streak: r.one.userStreak({ from: r.user.id, to: r.userStreak.userId }),
+        streakLogs: r.many.streakLog(),
     },
     session: {
         user: r.one.user({
@@ -153,5 +185,10 @@ export const relations = defineRelations({ user, session, account, verification,
             to: r.workoutSession.variantId
         })
     },
-
+    userStreak: {
+        user: r.one.user({ from: r.userStreak.userId, to: r.user.id }),
+    },
+    streakLog: {
+        user: r.one.user({ from: r.streakLog.userId, to: r.user.id }),
+    },
 }))

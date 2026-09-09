@@ -150,7 +150,17 @@ export const news = pgTable("news", {
     created_at: timestamp("created_at").defaultNow().notNull()
 })
 
-export const relations = defineRelations({ user, session, account, verification, exercise, exerciseVariations, workoutSession, userStreak, streakLog, news }, (r) => ({
+export const communityMessage = pgTable("community_message", {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: text("user_id").notNull().references(() => user.id, { onDelete: "cascade" }),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => [
+    index("community_message_createdAt_idx").on(table.createdAt),
+    index("community_message_userId_idx").on(table.userId),
+])
+
+export const relations = defineRelations({ user, session, account, verification, exercise, exerciseVariations, workoutSession, userStreak, streakLog, news, communityMessage }, (r) => ({
     user: {
         session: r.many.session(),
         streak: r.one.userStreak({ from: r.user.id, to: r.userStreak.userId }),
@@ -190,5 +200,8 @@ export const relations = defineRelations({ user, session, account, verification,
     },
     streakLog: {
         user: r.one.user({ from: r.streakLog.userId, to: r.user.id }),
+    },
+    communityMessage: {
+        user: r.one.user({ from: r.communityMessage.userId, to: r.user.id }),
     },
 }))

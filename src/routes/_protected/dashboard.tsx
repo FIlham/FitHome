@@ -47,6 +47,7 @@ function RouteComponent() {
                 <Link to='/streak' style={navBtn}>Streak</Link>
                 <Link to='/gym' style={navBtn}>Lokasi Gym/Toko</Link>
                 <Link to='/news' style={navBtn}>News</Link>
+                <Link to='/community' style={{ ...navBtn, background: '#111', color: '#fff' }}>Komunitas</Link>
                 <Link to='/ai-coach' style={navBtn}>AI Coach</Link>
                 <Link to='/profile' style={navBtn}>Profile</Link>
             </nav>

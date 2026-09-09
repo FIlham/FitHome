@@ -31,3 +31,8 @@ export const newsKeys = {
     all: ["news", "all"] as const,
     detail: (id: string) => ["news", id] as const
 } as const
+
+export const communityKeys = {
+    all: ["community", "all"] as const,
+    list: (limit?: number) => ["community", "list", limit ?? 50] as const,
+} as const

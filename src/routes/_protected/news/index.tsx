@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { newsKeys } from '../../lib/query'
-import { api } from '../../lib/treaty'
-import { formatRelative } from '../../lib/format'
+import { newsKeys } from '../../../lib/query'
+import { api } from '../../../lib/treaty'
+import { formatRelative } from '../../../lib/format'
 
-export const Route = createFileRoute('/_protected/news')({
+export const Route = createFileRoute('/_protected/news/')({
     component: RouteComponent,
 })
 

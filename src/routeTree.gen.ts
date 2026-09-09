@@ -16,13 +16,15 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthLoginRouteImport } from './routes/_auth/login'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as ProtectedAiCoachRouteImport } from './routes/_protected/ai-coach'
+import { Route as ProtectedCommunityRouteImport } from './routes/_protected/community'
 import { Route as ProtectedDashboardRouteImport } from './routes/_protected/dashboard'
 import { Route as ProtectedGymRouteImport } from './routes/_protected/gym'
 import { Route as ProtectedLatihanRouteImport } from './routes/_protected/latihan'
-import { Route as ProtectedNewsRouteImport } from './routes/_protected/news'
+import { Route as ProtectedNewsRouteRouteImport } from './routes/_protected/news/route'
 import { Route as ProtectedProfileRouteImport } from './routes/_protected/profile'
 import { Route as ProtectedStreakRouteImport } from './routes/_protected/streak'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
+import { Route as ProtectedNewsIndexRouteImport } from './routes/_protected/news/index'
 import { Route as ProtectedNewsNewsIdRouteImport } from './routes/_protected/news/$newsId'
 import { Route as ProtectedStartExerciseExerciseIdRouteImport } from './routes/_protected/start-exercise/$exerciseId'
 
@@ -59,6 +61,11 @@ const ProtectedAiCoachRoute = ProtectedAiCoachRouteImport.update({
   path: '/ai-coach',
   getParentRoute: () => ProtectedRoute,
 } as any)
+const ProtectedCommunityRoute = ProtectedCommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => ProtectedRoute,
+} as any)
 const ProtectedDashboardRoute = ProtectedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -74,7 +81,7 @@ const ProtectedLatihanRoute = ProtectedLatihanRouteImport.update({
   path: '/latihan',
   getParentRoute: () => ProtectedRoute,
 } as any)
-const ProtectedNewsRoute = ProtectedNewsRouteImport.update({
+const ProtectedNewsRouteRoute = ProtectedNewsRouteRouteImport.update({
   id: '/news',
   path: '/news',
   getParentRoute: () => ProtectedRoute,
@@ -94,10 +101,15 @@ const ApiSplatRoute = ApiSplatRouteImport.update({
   path: '/api/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProtectedNewsIndexRoute = ProtectedNewsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => ProtectedNewsRouteRoute,
+} as any)
 const ProtectedNewsNewsIdRoute = ProtectedNewsNewsIdRouteImport.update({
   id: '/$newsId',
   path: '/$newsId',
-  getParentRoute: () => ProtectedNewsRoute,
+  getParentRoute: () => ProtectedNewsRouteRoute,
 } as any)
 const ProtectedStartExerciseExerciseIdRoute =
   ProtectedStartExerciseExerciseIdRouteImport.update({
@@ -109,18 +121,20 @@ const ProtectedStartExerciseExerciseIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/news': typeof ProtectedNewsRouteRouteWithChildren
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/ai-coach': typeof ProtectedAiCoachRoute
+  '/community': typeof ProtectedCommunityRoute
   '/dashboard': typeof ProtectedDashboardRoute
   '/gym': typeof ProtectedGymRoute
   '/latihan': typeof ProtectedLatihanRoute
-  '/news': typeof ProtectedNewsRouteWithChildren
   '/profile': typeof ProtectedProfileRoute
   '/streak': typeof ProtectedStreakRoute
   '/api/$': typeof ApiSplatRoute
   '/news/$newsId': typeof ProtectedNewsNewsIdRoute
   '/start-exercise/$exerciseId': typeof ProtectedStartExerciseExerciseIdRoute
+  '/news/': typeof ProtectedNewsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -128,15 +142,16 @@ export interface FileRoutesByTo {
   '/login': typeof AuthLoginRoute
   '/register': typeof AuthRegisterRoute
   '/ai-coach': typeof ProtectedAiCoachRoute
+  '/community': typeof ProtectedCommunityRoute
   '/dashboard': typeof ProtectedDashboardRoute
   '/gym': typeof ProtectedGymRoute
   '/latihan': typeof ProtectedLatihanRoute
-  '/news': typeof ProtectedNewsRouteWithChildren
   '/profile': typeof ProtectedProfileRoute
   '/streak': typeof ProtectedStreakRoute
   '/api/$': typeof ApiSplatRoute
   '/news/$newsId': typeof ProtectedNewsNewsIdRoute
   '/start-exercise/$exerciseId': typeof ProtectedStartExerciseExerciseIdRoute
+  '/news': typeof ProtectedNewsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -144,36 +159,40 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteWithChildren
   '/_protected': typeof ProtectedRouteWithChildren
   '/admin': typeof AdminRoute
+  '/_protected/news': typeof ProtectedNewsRouteRouteWithChildren
   '/_auth/login': typeof AuthLoginRoute
   '/_auth/register': typeof AuthRegisterRoute
   '/_protected/ai-coach': typeof ProtectedAiCoachRoute
+  '/_protected/community': typeof ProtectedCommunityRoute
   '/_protected/dashboard': typeof ProtectedDashboardRoute
   '/_protected/gym': typeof ProtectedGymRoute
   '/_protected/latihan': typeof ProtectedLatihanRoute
-  '/_protected/news': typeof ProtectedNewsRouteWithChildren
   '/_protected/profile': typeof ProtectedProfileRoute
   '/_protected/streak': typeof ProtectedStreakRoute
   '/api/$': typeof ApiSplatRoute
   '/_protected/news/$newsId': typeof ProtectedNewsNewsIdRoute
   '/_protected/start-exercise/$exerciseId': typeof ProtectedStartExerciseExerciseIdRoute
+  '/_protected/news/': typeof ProtectedNewsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/admin'
+    | '/news'
     | '/login'
     | '/register'
     | '/ai-coach'
+    | '/community'
     | '/dashboard'
     | '/gym'
     | '/latihan'
-    | '/news'
     | '/profile'
     | '/streak'
     | '/api/$'
     | '/news/$newsId'
     | '/start-exercise/$exerciseId'
+    | '/news/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -181,33 +200,36 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/ai-coach'
+    | '/community'
     | '/dashboard'
     | '/gym'
     | '/latihan'
-    | '/news'
     | '/profile'
     | '/streak'
     | '/api/$'
     | '/news/$newsId'
     | '/start-exercise/$exerciseId'
+    | '/news'
   id:
     | '__root__'
     | '/'
     | '/_auth'
     | '/_protected'
     | '/admin'
+    | '/_protected/news'
     | '/_auth/login'
     | '/_auth/register'
     | '/_protected/ai-coach'
+    | '/_protected/community'
     | '/_protected/dashboard'
     | '/_protected/gym'
     | '/_protected/latihan'
-    | '/_protected/news'
     | '/_protected/profile'
     | '/_protected/streak'
     | '/api/$'
     | '/_protected/news/$newsId'
     | '/_protected/start-exercise/$exerciseId'
+    | '/_protected/news/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -269,6 +291,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProtectedAiCoachRouteImport
       parentRoute: typeof ProtectedRoute
     }
+    '/_protected/community': {
+      id: '/_protected/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof ProtectedCommunityRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
     '/_protected/dashboard': {
       id: '/_protected/dashboard'
       path: '/dashboard'
@@ -294,7 +323,7 @@ declare module '@tanstack/react-router' {
       id: '/_protected/news'
       path: '/news'
       fullPath: '/news'
-      preLoaderRoute: typeof ProtectedNewsRouteImport
+      preLoaderRoute: typeof ProtectedNewsRouteRouteImport
       parentRoute: typeof ProtectedRoute
     }
     '/_protected/profile': {
@@ -318,12 +347,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_protected/news/': {
+      id: '/_protected/news/'
+      path: '/'
+      fullPath: '/news/'
+      preLoaderRoute: typeof ProtectedNewsIndexRouteImport
+      parentRoute: typeof ProtectedNewsRouteRoute
+    }
     '/_protected/news/$newsId': {
       id: '/_protected/news/$newsId'
       path: '/$newsId'
       fullPath: '/news/$newsId'
       preLoaderRoute: typeof ProtectedNewsNewsIdRouteImport
-      parentRoute: typeof ProtectedNewsRoute
+      parentRoute: typeof ProtectedNewsRouteRoute
     }
     '/_protected/start-exercise/$exerciseId': {
       id: '/_protected/start-exercise/$exerciseId'
@@ -347,35 +383,38 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
-interface ProtectedNewsRouteChildren {
+interface ProtectedNewsRouteRouteChildren {
   ProtectedNewsNewsIdRoute: typeof ProtectedNewsNewsIdRoute
+  ProtectedNewsIndexRoute: typeof ProtectedNewsIndexRoute
 }
 
-const ProtectedNewsRouteChildren: ProtectedNewsRouteChildren = {
+const ProtectedNewsRouteRouteChildren: ProtectedNewsRouteRouteChildren = {
   ProtectedNewsNewsIdRoute: ProtectedNewsNewsIdRoute,
+  ProtectedNewsIndexRoute: ProtectedNewsIndexRoute,
 }
 
-const ProtectedNewsRouteWithChildren = ProtectedNewsRoute._addFileChildren(
-  ProtectedNewsRouteChildren,
-)
+const ProtectedNewsRouteRouteWithChildren =
+  ProtectedNewsRouteRoute._addFileChildren(ProtectedNewsRouteRouteChildren)
 
 interface ProtectedRouteChildren {
+  ProtectedNewsRouteRoute: typeof ProtectedNewsRouteRouteWithChildren
   ProtectedAiCoachRoute: typeof ProtectedAiCoachRoute
+  ProtectedCommunityRoute: typeof ProtectedCommunityRoute
   ProtectedDashboardRoute: typeof ProtectedDashboardRoute
   ProtectedGymRoute: typeof ProtectedGymRoute
   ProtectedLatihanRoute: typeof ProtectedLatihanRoute
-  ProtectedNewsRoute: typeof ProtectedNewsRouteWithChildren
   ProtectedProfileRoute: typeof ProtectedProfileRoute
   ProtectedStreakRoute: typeof ProtectedStreakRoute
   ProtectedStartExerciseExerciseIdRoute: typeof ProtectedStartExerciseExerciseIdRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
+  ProtectedNewsRouteRoute: ProtectedNewsRouteRouteWithChildren,
   ProtectedAiCoachRoute: ProtectedAiCoachRoute,
+  ProtectedCommunityRoute: ProtectedCommunityRoute,
   ProtectedDashboardRoute: ProtectedDashboardRoute,
   ProtectedGymRoute: ProtectedGymRoute,
   ProtectedLatihanRoute: ProtectedLatihanRoute,
-  ProtectedNewsRoute: ProtectedNewsRouteWithChildren,
   ProtectedProfileRoute: ProtectedProfileRoute,
   ProtectedStreakRoute: ProtectedStreakRoute,
   ProtectedStartExerciseExerciseIdRoute: ProtectedStartExerciseExerciseIdRoute,

@@ -16,11 +16,11 @@
   "14": "vite-env.d.ts",
   "15": "vite.config.ts",
   "16": "auth-client.ts",
-  "17": "getSession",
+  "17": "FileRoutesByPath",
   "18": "gym.tsx",
   "19": "router.tsx",
   "20": "$.tsx",
   "21": "index.tsx",
-  "22": "FileRoutesByPath",
-  "23": "__root.tsx"
+  "22": "profile.tsx",
+  "23": "Route"
 }

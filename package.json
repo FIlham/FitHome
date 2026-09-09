@@ -4,8 +4,10 @@
     "type": "module",
     "private": true,
     "scripts": {
-        "dev": "vite dev",
-        "build": "vite build",
+        "dev": "bun --bun vite dev",
+        "build": "bun --bun vite build",
+        "preview": "bun --bun vite preview",
+        "start": "bun run server.ts",
         "db:generate": "bun x drizzle-kit generate",
         "db:migrate": "bun x drizzle-kit migrate"
     },

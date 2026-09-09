@@ -1,8 +1,4 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "bunVersion": "1.x",
-  "installCommand": "bun install",
-  "buildCommand": "bun run build",
-  "framework": "vite",
-  "regions": ["sin1"]
+  "framework": "tanstack-start"
 }

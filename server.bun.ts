@@ -64,11 +64,28 @@
 */
 
 import path from 'node:path'
+import fs from 'node:fs'
 
-// Configuration
-const SERVER_PORT = Number(process.env.PORT ?? 3000)
-const CLIENT_DIRECTORY = './dist/client'
-const SERVER_ENTRY_POINT = './dist/server/server.js'
+// Configuration — support both legacy Vite (dist/) dan Nitro (.output / .vercel/output)
+const SERVER_PORT = Number(process.env.PORT ?? process.env.NITRO_PORT ?? 3000)
+const CLIENT_CANDIDATES = ['./.output/public', './dist/client', './.vercel/output/static']
+const SERVER_CANDIDATES = [
+    './.output/server/index.mjs',
+    './dist/server/server.js',
+    './.vercel/output/functions/__server.func/index.mjs',
+]
+
+function pickExisting(candidates: string[]): string | null {
+    for (const p of candidates) {
+        try {
+            if (fs.existsSync(p)) return p
+        } catch {}
+    }
+    return null
+}
+
+const CLIENT_DIRECTORY = pickExisting(CLIENT_CANDIDATES) ?? './dist/client'
+const SERVER_ENTRY_POINT = pickExisting(SERVER_CANDIDATES) ?? './dist/server/server.js'
 
 // Logging utilities for professional output
 const log = {
@@ -502,7 +519,22 @@ async function initializeStaticRoutes(
 async function initializeServer() {
     log.header('Starting Production Server')
 
-    // Load TanStack Start server handler
+    // Jika build Nitro tersedia, delegasikan langsung — file tersebut sudah `serve({fetch})` sendiri
+    const isNitroBundle = SERVER_ENTRY_POINT.includes('.output/server/') || SERVER_ENTRY_POINT.includes('__server.func')
+    if (isNitroBundle) {
+        log.info(`Detected Nitro bundle at ${SERVER_ENTRY_POINT} — delegating`)
+        log.info(`Client dir resolved: ${CLIENT_DIRECTORY}`)
+        try {
+            await import(SERVER_ENTRY_POINT)
+            // Nitro sudah listen, jangan buat Bun.serve lagi
+            return
+        } catch (error) {
+            log.error(`Failed to start Nitro bundle: ${String(error)}`)
+            process.exit(1)
+        }
+    }
+
+    // Load TanStack Start server handler (fallback legacy dist/server/server.js)
     let handler: { fetch: (request: Request) => Response | Promise<Response> }
     try {
         const serverModule = (await import(SERVER_ENTRY_POINT)) as {

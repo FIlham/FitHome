@@ -25,3 +25,32 @@ export const newsRoute = new Elysia({ prefix: "/news" })
             limit: t.Number()
         })
     })
+    .get("/:newsId", async ({ params, set }) => {
+        try {
+            const news = await db.query.news.findFirst({
+                where: {
+                    id: params.newsId
+                }
+            })
+
+            if (!news) {
+                set.status = 404
+                return { success: false as const, message: "News not found" }
+            }
+
+            return {
+                success: true as const,
+                data: news
+            }
+        } catch (error) {
+            set.status = 500
+            return {
+                success: false,
+                message: "Internal server error"
+            }
+        }
+    }, {
+        params: t.Object({
+            newsId: t.String()
+        })
+    })

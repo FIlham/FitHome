@@ -108,8 +108,8 @@ export const exerciseVariations = pgTable("exercise_variation", {
     id: uuid("id").primaryKey().defaultRandom(),
     name: text("name").notNull(),
     level: exerciseLevels(),
-    exerciseId: uuid("exercise_id").notNull().references(() => exercise.id)
-
+    exerciseId: uuid("exercise_id").notNull().references(() => exercise.id),
+    tools: text("tools")
 }, (table) => [index("exercise_variations_exerciseId_idx").on(table.exerciseId)])
 
 export const workoutSession = pgTable("workout_session", {
